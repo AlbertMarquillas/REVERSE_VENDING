@@ -1,84 +1,52 @@
-#include "comms.h"
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include <ArduinoJson.h>
+#include "sensors.h"
+#include <Arduino.h>
+#include "HX711.h"
 
-const char* ssid = "WIFI_SSID";
-const char* password = "PASSWORD";
-const char* mqtt_server = "192.168.1.87";
-const int mqtt_port = 1883;
-const char* mqtt_topic = "sensor/datos";
+#define TRIG_PIN 5
+#define ECHO_PIN 18
+#define INDUCTIVE_PIN 32
+#define LIGHT_PIN 33
 
-WiFiClient espClient;
-PubSubClient client(espClient);
-String received_message = "";
+#define DT  26
+#define SCK 25
 
-void Comms::setup_wifi() {
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("\nConectado a WiFi");
+HX711 balanza;
+float factor_calibracion = -7050.0; 
+
+void Sensors::setup_sensors() {
+    // Inicializaciones de pines para los diferentes sensores
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+    pinMode(INDUCTIVE_PIN, INPUT);
+    pinMode(LIGHT_PIN, INPUT);
+
+    balanza.begin(DT, SCK);
+    balanza.set_scale(factor_calibracion);
+    balanza.tare();
 }
 
-void Comms::setup_mqtt() {
-    client.setServer(mqtt_server, mqtt_port);
-    client.setCallback(callback_mqtt);
+float Sensors::read_ultrasonic() {
+    // Devuelve la distancia detectada por el sensor de ultrasonidos
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    long duration = pulseIn(ECHO_PIN, HIGH);
+    return duration/59; // Escalado a cm
 }
 
-bool Comms::mqtt_connected() {
-    return client.connected();
+float Sensors::read_load_cell() {
+    // Devuelve el peso detectado por la celda de carga
+    return balanza.get_units(10); // Devuelve media de 10 lecturas
 }
 
-void Comms::reconnect_mqtt() {
-    while (!client.connected()) {
-        Serial.print("Conectando a MQTT...");
-        if (client.connect("ESP32Client")) {
-            Serial.println("Conectado");
-            client.subscribe("sensor/comandos");  // Suscribirse solo a este topic
-        } else {
-            Serial.print("Fallo, rc=");
-            Serial.print(client.state());
-            Serial.println(" Intentando de nuevo en 5 segundos");
-            delay(5000);
-        }
-    }
+bool Sensors::read_inductive_sensor() {
+    // Devuelve la lectura del sensor inductivo
+    return digitalRead(INDUCTIVE_PIN);
 }
 
-void Comms::mqtt_loop() {
-    client.loop();
-}
-
-void Comms::send_sensor_data(Sensors& sensors) {
-    StaticJsonDocument<256> json;
-    json["temperatura"] = sensors.read_temperature();
-    json["humedad"] = sensors.read_humidity();
-    json["distancia"] = sensors.read_ultrasonic();
-    json["peso"] = sensors.read_load_cell();
-    json["metal"] = sensors.read_inductive_sensor();
-    json["luz"] = sensors.read_light_sensor();
-    
-    char buffer[256];
-    serializeJson(json, buffer);
-    client.publish(mqtt_topic, buffer);
-}
-
-bool Comms::check_mqtt_message() {
-    return received_message.length() > 0;
-}
-
-String Comms::get_mqtt_message() {
-    String message = received_message;
-    received_message = "";  // Limpiar el mensaje después de leerlo
-    return message;
-}
-
-void Comms::callback_mqtt(char* topic, byte* payload, unsigned int length) {
-    payload[length] = '\0';  // Asegurar el final de la cadena
-
-    if (String(topic) == "sensor/comandos") {  // Filtrar solo los mensajes del topic correcto
-        received_message = String((char*)payload);
-        Serial.println("Mensaje MQTT recibido en sensor/comandos: " + received_message);
-    }
+int Sensors::read_light_sensor() {
+    // Devuelve el valor de luz ambiente
+    return (analogRead(LIGHT_PIN) / 4095.0) * 100.0; // Devuelve porcentaje
 }
