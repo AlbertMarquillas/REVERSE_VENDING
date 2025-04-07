@@ -1,18 +1,17 @@
 #include "sensors.h"
 #include <Arduino.h>
-#include "DHT.h"
-
-#define DHTPIN 4
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
+#include "HX711.h"
 
 #define TRIG_PIN 5
 #define ECHO_PIN 18
-#define LOAD_PIN 34
-#define FORCE_PIN 35
 #define INDUCTIVE_PIN 32
 #define LIGHT_PIN 33
-#define CUT_SENSOR_PIN 25
+
+#define DT  26
+#define SCK 25
+
+HX711 balanza;
+float factor_calibracion = -7050.0; 
 
 void Sensors::setup_sensors() {
     // Inicializaciones de pines para los diferentes sensores
@@ -20,18 +19,10 @@ void Sensors::setup_sensors() {
     pinMode(ECHO_PIN, INPUT);
     pinMode(INDUCTIVE_PIN, INPUT);
     pinMode(LIGHT_PIN, INPUT);
-    pinMode(CUT_SENSOR_PIN, INPUT);
-    dht.begin();
-}
 
-float Sensors::read_temperature() {
-    // Devuelve la temperatura del DHT11
-    return dht.readTemperature();
-}
-
-float Sensors::read_humidity() {
-    // Devuelve la humedad del DHT11
-    return dht.readHumidity();
+    balanza.begin(DT, SCK);
+    balanza.set_scale(factor_calibracion);
+    balanza.tare();
 }
 
 float Sensors::read_ultrasonic() {
@@ -42,12 +33,12 @@ float Sensors::read_ultrasonic() {
     delayMicroseconds(10);
     digitalWrite(TRIG_PIN, LOW);
     long duration = pulseIn(ECHO_PIN, HIGH);
-    return duration * 0.034 / 2;
+    return duration/59; // Escalado a cm
 }
 
 float Sensors::read_load_cell() {
     // Devuelve el peso detectado por la celda de carga
-    return analogRead(LOAD_PIN) * (5.0 / 4095.0);
+    return balanza.get_units(10); // Devuelve media de 10 lecturas
 }
 
 bool Sensors::read_inductive_sensor() {
@@ -57,10 +48,5 @@ bool Sensors::read_inductive_sensor() {
 
 int Sensors::read_light_sensor() {
     // Devuelve el valor de luz ambiente
-    return analogRead(LIGHT_PIN);
-}
-
-bool Sensors::read_cut_sensor() {
-    // Devuelve la lectura del sensor de corte
-    return digitalRead(CUT_SENSOR_PIN);
+    return (analogRead(LIGHT_PIN) / 4095.0) * 100.0; // Devuelve porcentaje
 }
