@@ -1,20 +1,16 @@
-#ifndef COMMS_H
-#define COMMS_H
+#ifndef SENSORS_H
+#define SENSORS_H
 
 #include <Arduino.h>
-#include "sensors.h"
 
-class Comms {
+class Sensors {
 public:
-    void setup_wifi();
-    void setup_mqtt();
-    bool mqtt_connected();
-    void reconnect_mqtt();
-    void mqtt_loop();
-    void send_sensor_data(Sensors& sensors);
-    bool check_mqtt_message();
-    String get_mqtt_message();
-    static void callback_mqtt(char* topic, byte* payload, unsigned int length);
+    Sensors() {};
+    void setup_sensors();
+    float read_ultrasonic();
+    float read_load_cell();
+    bool read_inductive_sensor();
+    int read_light_sensor();
 };
 
 #endif
