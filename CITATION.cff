@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Si usas este software, citalo como se especifica."
+authors:
+- family-names: "Marquillas Estruch"
+  given-names: "Albert"
+title: "Diseño de equipo de reverse vending"
+version: 1.0.0
+date-released: 2025-04-07
+url: "https://github.com/AlbertMarquillas/REVERSE_VENDING"
