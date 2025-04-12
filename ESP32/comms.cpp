@@ -57,8 +57,9 @@ void Comms::mqtt_loop() {
 void Comms::send_sensor_data(Sensors& sensors) {
     StaticJsonDocument<256> json;
     json["entrada_cortada"] = sensors.read_ultrasonic()<DIST_CORTE;
-    json["peso"] = sensors.read_load_cell();
-    json["objeto_control"] = sensors.read_load_cell()>PESO_MIN;
+    float peso = sensors.read_load_cell();
+    json["peso"] = peso;
+    json["objeto_control"] = peso>PESO_MIN;
     json["metal"] = sensors.read_inductive_sensor();
     json["iluminacion"] = sensors.read_light_sensor();
     
