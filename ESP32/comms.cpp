@@ -1,4 +1,5 @@
 #include "comms.h"
+#include "sensors.h"
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
