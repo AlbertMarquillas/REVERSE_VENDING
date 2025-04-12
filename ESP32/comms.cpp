@@ -5,7 +5,7 @@
 #include <ArduinoJson.h>
 
 #define DIST_CORTE 35 // Distancia para considerar corte de 35cm o menos
-#define PESO_MIN 50 // Peso minimo de 50g
+#define PESO_MIN 1050 // Peso minimo de 50g
 
 const char* ssid = "WIFI_SSID";
 const char* password = "PASSWORD";
