@@ -3,7 +3,7 @@
 #include "sensors.h"
 #include "lora_com.h"
 
-#define SLEEP_TIME 6e6 // 6 segundos en microsegundos
+#define SLEEP_TIME 5e6 // 5 segundos en microsegundos
 
 Comms comms;
 Sensors sensors;
@@ -29,8 +29,6 @@ void loop() { // Bucle principal para iterar
         String message = comms.get_mqtt_message();
         lora.send_data(message);  // Enviar el mensaje por LoRa
     }
-
-    Serial.println("Entrando en modo Deep Sleep...");
     esp_sleep_enable_timer_wakeup(SLEEP_TIME); // Modo deep sleep para consumir menos enegría
     esp_deep_sleep_start();
 }
