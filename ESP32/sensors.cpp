@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "HX711.h"
 
-#define TRIG_PIN 5
+#define TRIG_PIN 17
 #define ECHO_PIN 18
 #define INDUCTIVE_PIN 32
 #define LIGHT_PIN 33
