@@ -1,0 +1,38 @@
+#include "classifier.h"
+#include <opencv2/opencv.hpp>
+#include <iostream>
+
+Classifier::Classifier(const std::string& model_path) : model_path(model_path) {
+    try {
+        model = torch::jit::load(model_path);
+        std::cout << "Modelo cargado correctamente." << std::endl;
+    } catch (const c10::Error& e) {
+        std::cerr << "Error al cargar el modelo: " << e.what() << std::endl;
+    }
+}
+
+std::string Classifier::predict(const std::string& image_path) {
+    try {
+        cv::Mat image = cv::imread(image_path);
+        if (image.empty()) {
+            std::cerr << "Error al cargar la imagen." << std::endl;
+            return "error";
+        }
+        
+        // Convertir imagen a tensor
+        torch::Tensor img_tensor = torch::from_blob(image.data, {1, image.rows, image.cols, 3}, torch::kByte);
+        img_tensor = img_tensor.permute({0, 3, 1, 2});
+        img_tensor = img_tensor.to(torch::kFloat) / 255.0;
+        
+        // Ejecutar modelo
+        std::vector<torch::jit::IValue> inputs;
+        inputs.push_back(img_tensor);
+        torch::Tensor output = model.forward(inputs).toTensor();
+        
+        int predicted_class = output.argmax(1).item<int>();
+        return predicted_class == 1 ? "correcto" : "incorrecto";
+    } catch (const c10::Error& e) {
+        std::cerr << "Error en la predicción: " << e.what() << std::endl;
+        return "error";
+    }
+}
