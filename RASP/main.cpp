@@ -113,7 +113,7 @@ int main() {
         if (std::cin.rdbuf()->in_avail()) {
             std::string comando;
             std::cin >> comando;
-            if (comando == "REST_MODE") {
+            if (comando == "finalizar") {
                 finalizar_sesion();
             }
         }
