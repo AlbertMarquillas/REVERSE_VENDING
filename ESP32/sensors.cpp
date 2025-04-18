@@ -50,3 +50,8 @@ int Sensors::read_light_sensor() {
     // Devuelve el valor de luz ambiente
     return (analogRead(LIGHT_PIN) / 4095.0) * 100.0; // Devuelve porcentaje
 }
+
+void Sensors::calibrate() {
+    // Función definida para parametrizar sensores 
+    // Para el trabajo no se ha entrado en implementar dicha función
+}
