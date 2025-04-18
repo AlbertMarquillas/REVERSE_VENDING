@@ -6,7 +6,6 @@
 class Camera {
 public:
     Camera();
-    bool detect_object();
     std::string capture_image();
 };
 
