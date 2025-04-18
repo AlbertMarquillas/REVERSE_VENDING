@@ -37,6 +37,7 @@ float calcular_recompensa(int clase, bool es_metal) {
 }
 
 void finalizar_sesion() {
+    comms.send_message("REST_MODE");
     Json::Value resultado_final;
     resultado_final["usuario"] = current_user;
     resultado_final["objetos"] = Json::arrayValue;
