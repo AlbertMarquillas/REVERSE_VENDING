@@ -11,12 +11,12 @@ Classifier::Classifier(const std::string& model_path) : model_path(model_path) {
     }
 }
 
-std::string Classifier::predict(const std::string& image_path) {
+int Classifier::predict(const std::string& image_path) {
     try {
         cv::Mat image = cv::imread(image_path);
         if (image.empty()) {
             std::cerr << "Error al cargar la imagen." << std::endl;
-            return "error";
+            return -1;
         }
         
         // Convertir imagen a tensor
@@ -30,9 +30,9 @@ std::string Classifier::predict(const std::string& image_path) {
         torch::Tensor output = model.forward(inputs).toTensor();
         
         int predicted_class = output.argmax(1).item<int>();
-        return predicted_class == 1 ? "correcto" : "incorrecto";
+        return predicted_class
     } catch (const c10::Error& e) {
         std::cerr << "Error en la predicción: " << e.what() << std::endl;
-        return "error";
+        return -1;
     }
 }
