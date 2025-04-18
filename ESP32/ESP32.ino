@@ -30,7 +30,7 @@ void loop() { // Bucle principal para iterar
 
     if (comms.check_mqtt_message()) {
         String message = comms.get_mqtt_message();
-        if(message["info"]=="OP_MODE") // Comprovacion mensaje
+        if(message=="OP_MODE") // Comprovacion mensaje
 		op_mode = true;
 	elif(message=="REST_MODE")
 		op_mode = false;
