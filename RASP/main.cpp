@@ -97,7 +97,7 @@ int main() {
     comms.set_callback(message_callback);
     comms.connect();
 
-    comms.send_message("inicializar");
+    comms.send_message("OP_MODE");
 
     while (session_active) {
         comms.loop();
@@ -113,7 +113,7 @@ int main() {
         if (std::cin.rdbuf()->in_avail()) {
             std::string comando;
             std::cin >> comando;
-            if (comando == "finalizar") {
+            if (comando == "REST_MODE") {
                 finalizar_sesion();
             }
         }
