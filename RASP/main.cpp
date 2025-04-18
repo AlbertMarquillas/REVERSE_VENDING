@@ -68,8 +68,8 @@ void message_callback(const std::string& payload) {
     }
 
     bool objeto_control = root.get("objeto_control", false).asBool();
-    bool corte = root.get("sensor_corte", false).asBool();
-    bool es_metal = root.get("sensor_inductivo", false).asBool();
+    bool corte = root.get("entrada_cortada", false).asBool();
+    bool es_metal = root.get("metal", false).asBool();
 
     if (!session_active) return;
 
