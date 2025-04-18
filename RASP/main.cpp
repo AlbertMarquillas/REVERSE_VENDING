@@ -8,7 +8,7 @@
 #define MQTT_TOPIC "sensor/datos"
 #define MQTT_RESPONSE_TOPIC "sensor/comandos"
 
-Comms comms("192.168.1.100", 1883, MQTT_TOPIC, MQTT_RESPONSE_TOPIC);
+Comms comms("192.168.1.87", 1883, MQTT_TOPIC, MQTT_RESPONSE_TOPIC);
 Camera camera;
 Classifier classifier("model.ts");
 
@@ -17,7 +17,7 @@ void message_callback(const std::string& message) {
     
     if (camera.detect_object()) {
         std::string image_path = camera.capture_image();
-        std::string classification = classifier.predict(image_path);
+        int classification = classifier.predict(image_path);
         
         std::cout << "Clasificación: " << classification << std::endl;
         if (classification == "correcto") {
