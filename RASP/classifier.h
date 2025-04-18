@@ -6,7 +6,7 @@
 class Classifier {
 public:
     Classifier(const std::string& model_path);
-    int predict(const std::string& image_path);
+    std::string predict(const std::string& image_path);
 private:
     std::string model_path;
 };
