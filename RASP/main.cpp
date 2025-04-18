@@ -21,14 +21,18 @@ std::vector<std::string> session_results;
 time_t last_action_time = time(nullptr);
 bool session_active = true;
 
-float calcular_recompensa(const std::string& clase, bool es_metal) {
-    if (clase == "marca") return 3;
-    if (clase == "botella_plastico" && !es_metal) return 2.1;
-    if (clase == "botella_plastico" && es_metal) return 1;
-    if (clase == "botella_vidrio" && !es_metal) return 2.2;
-    if (clase == "botella_vidrio" && es_metal) return 1;
-    if (clase == "lata" && es_metal) return 2.3;
-    if (clase == "lata" && !es_metal) return 0;
+float calcular_recompensa(int clase, bool es_metal) {
+    // clase 0 -> botella_plastico
+    // clase 1 -> botella_vidrio
+    // clase 2 -> lata
+    // classe 3 -> marca de valor
+    if (clase == 4) return 3;
+    if (clase == 0 && !es_metal) return 2.1;
+    if (clase == 0 && es_metal) return 1;
+    if (clase == 1 && !es_metal) return 2.2;
+    if (clase == 1 && es_metal) return 1;
+    if (clase == 2 && es_metal) return 2.3;
+    if (clase == 2 && !es_metal) return 0;
     return 0;
 }
 
@@ -76,7 +80,7 @@ void message_callback(const std::string& payload) {
         }
 
         std::string image_path = camera.capture_image();
-        std::string clase = classifier.predict(image_path);
+        int clase = classifier.predict(image_path);
 
         float recompensa = calcular_recompensa(clase, es_metal);
         std::cout << "[INFO] Objeto: " << clase << " | Metal: " << (es_metal ? "Sí" : "No") 
