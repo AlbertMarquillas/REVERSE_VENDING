@@ -4,10 +4,6 @@
 
 Camera::Camera() {}
 
-bool Camera::detect_object() {
-    return true; // Aquí iría la lógica para detectar objetos
-}
-
 std::string Camera::capture_image() {
     cv::VideoCapture cap(0);
     if (!cap.isOpened()) {
