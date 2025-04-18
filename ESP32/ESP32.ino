@@ -31,10 +31,10 @@ void loop() { // Bucle principal para iterar
     if (comms.check_mqtt_message()) {
         String message = comms.get_mqtt_message();
         if(message["info"]=="OP_MODE") // Comprovacion mensaje
-			op_mode = true;
-		elif(message=="REST_MODE")
-			op_mode = false;
-		elif(message=="CALIBRATE")
+		op_mode = true;
+	elif(message=="REST_MODE")
+		op_mode = false;
+	elif(message=="CALIBRATE")
             sensors.calibrate();
         else
             lora.send_data(message);  // Enviar el mensaje por LoRa
