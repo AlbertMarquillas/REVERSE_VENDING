@@ -11,6 +11,7 @@ public:
     float read_load_cell();
     bool read_inductive_sensor();
     int read_light_sensor();
+    void calibrate();
 };
 
 #endif
