@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import time
 
-MQTT_BROKER = "192.168.1.100"
+MQTT_BROKER = "192.168.1.87"
 MQTT_TOPIC = "sensor/datos"
 MQTT_RESPONSE_TOPIC = "sensor/comandos"
 
