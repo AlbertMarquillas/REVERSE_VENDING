@@ -3,11 +3,14 @@
 #include "sensors.h"
 #include "lora_com.h"
 
-#define SLEEP_TIME 5e6 // 5 segundos en microsegundos
+#define SLEEP_TIME 10e6 // 10 segundos en microsegundos
+#define SLEEP_OP_MODE 1e6 // 1 segundo en microsegundos
 
 Comms comms;
 Sensors sensors;
 LoRaModule lora;
+
+bool op_mode = false;
 
 void setup() { // Setea los diferentes modulos
     Serial.begin(115200);
@@ -27,8 +30,15 @@ void loop() { // Bucle principal para iterar
 
     if (comms.check_mqtt_message()) {
         String message = comms.get_mqtt_message();
-        lora.send_data(message);  // Enviar el mensaje por LoRa
+        if(message["info"]=="OP_MODE") // Comprovacion mensaje
+			op_mode = true;
+		elif(message=="REST_MODE")
+			op_mode = false;
+		elif(message=="CALIBRATE")
+            sensors.calibrate();
+        else
+            lora.send_data(message);  // Enviar el mensaje por LoRa
     }
-    esp_sleep_enable_timer_wakeup(SLEEP_TIME); // Modo deep sleep para consumir menos enegría
+    esp_sleep_enable_timer_wakeup(op_mode?SLEEP_OP_MODE:SLEEP_TIME); // Modo deep sleep
     esp_deep_sleep_start();
 }
