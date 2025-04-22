@@ -26,10 +26,11 @@ bool session_active = true;                // Bandera de control de sesión
 
 // Función que calcula la recompensa basada en la clase detectada y si es metálico
 float calcular_recompensa(int clase, bool es_metal) {
-    // clase 0 -> botella plástico
-    // clase 1 -> botella vidrio
-    // clase 2 -> lata
-    // clase 3 -> marca de valor (valor especial)
+    // clase 0 -> lata
+    // clase 1 -> otros
+    // clase 2 -> botella plástico
+    // clase 3 -> botella vidrio
+    // clase 4 -> marca de valor (valor especial)
     if (clase == 4) return 3;
     if (clase == 0 && !es_metal) return 2.1;
     if (clase == 0 && es_metal) return 1;
