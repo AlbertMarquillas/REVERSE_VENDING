@@ -32,12 +32,14 @@ float calcular_recompensa(int clase, bool es_metal) {
     // clase 3 -> botella vidrio
     // clase 4 -> marca de valor (valor especial)
     if (clase == 4) return 3;
-    if (clase == 0 && !es_metal) return 2.1;
-    if (clase == 0 && es_metal) return 1;
-    if (clase == 1 && !es_metal) return 2.2;
+    if (clase == 2 && !es_metal) return 2.1;
+    if (clase == 2 && es_metal) return 1;
+    if (clase == 3 && !es_metal) return 2.2;
+    if (clase == 3 && es_metal) return 1;
+    if (clase == 0 && es_metal) return 2.3;
+    if (clase == 0 && !es_metal) return 0;
     if (clase == 1 && es_metal) return 1;
-    if (clase == 2 && es_metal) return 2.3;
-    if (clase == 2 && !es_metal) return 0;
+    if (clase == 1 && !es_metal) return 0;
     return 0; // Caso por defecto
 }
 
