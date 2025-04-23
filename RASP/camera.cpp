@@ -22,7 +22,7 @@ std::string Camera::capture_image() {
     // Nombre del archivo donde se guardará la imagen capturada
     std::string filename = "captura.jpg";
 
-    // Guarda la imagen en disco en formato JPEG
+    // Guarda la imagen en disco en formato JPG
     cv::imwrite(filename, frame);
 
     // Devuelve el nombre del archivo generado
