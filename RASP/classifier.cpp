@@ -64,24 +64,47 @@ int Classifier::predict(const std::string& image_path) {
             return -1;
         }
 
-        // Compara el embedding con todos los emb. conocidos en la carpeta EMBEDINGS/
+        // Thresholds individuales para cada clase (0, 1, 2). Clase 3 ignorada para similitud
+        std::map<int, float> class_thresholds = {
+            {0, 0.90},
+            {1, 0.92},
+            {2, 0.94}
+        };
+        
+        int matched_class = -1;
         float max_sim = 0.0;
-        const float threshold = 0.95;
-
+        
         for (const auto& file : fs::directory_iterator("EMBEDINGS")) {
             std::vector<float> vec = load_embedding_txt(file.path().string());
-            if (vec.size() != embedding.size(0)) continue;  // Skip si tamaño no coincide
-
-            // Convierte el vector a tensor y calcula similitud
-            torch::Tensor saved_tensor = torch::from_blob(vec.data(), {(long)vec.size()}, torch::kFloat32).clone();
-            float sim = cosine_similarity(embedding, saved_tensor);
-            if (sim > max_sim) max_sim = sim;
+            if (vec.size() != embedding.size(0)) continue;
+        
+            // Extrae la clase del nombre del archivo, ejemplo: clase0.txt -> 0
+            std::string filename = file.path().filename().string();
+            int class_id = -1;
+            try {
+                size_t pos1 = filename.find_first_of("0123456789");
+                size_t pos2 = filename.find_first_not_of("0123456789", pos1);
+                class_id = std::stoi(filename.substr(pos1, pos2 - pos1));
+            } catch (...) {
+                continue; // Ignora archivos con nombres no válidos
+            }
+        
+            // Solo comparar si la clase tiene threshold definido
+            if (class_thresholds.find(class_id) != class_thresholds.end()) {
+                torch::Tensor saved_tensor = torch::from_blob(vec.data(), {(long)vec.size()}, torch::kFloat32).clone();
+                float sim = cosine_similarity(embedding, saved_tensor);
+        
+                if (sim >= class_thresholds[class_id] && sim > max_sim) {
+                    max_sim = sim;
+                    matched_class = class_id;
+                }
+            }
         }
 
-        // Si la similitud supera el umbral, lo marcamos como clase especial "4"
-        if (max_sim >= threshold) {
-            std::cout << "Similitud alta con embedding conocido: " << max_sim << std::endl;
-            return 4;
+        // Si se encontró una coincidencia por similitud
+        if (matched_class != -1) {
+            std::cout << "Similitud alta con clase " << matched_class << ": " << max_sim << std::endl;
+            return 4;  // Clase especial si se supera el threshold
         }
 
         // Si no es un embedding conocido, usa argmax del embedding como predicción directa de clase
