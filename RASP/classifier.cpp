@@ -66,9 +66,9 @@ int Classifier::predict(const std::string& image_path) {
 
         // Thresholds individuales para cada clase (0, 1, 2). Clase 3 ignorada para similitud
         std::map<int, float> class_thresholds = {
-            {0, 0.90},
-            {1, 0.92},
-            {2, 0.94}
+            {0, 0.80}, // Latas
+            {2, 0.80}, // Botella PET
+            {3, 0.90}  // Botella vidrio
         };
         
         int matched_class = -1;
