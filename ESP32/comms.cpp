@@ -19,6 +19,10 @@ const char* mqtt_server = "192.168.1.87";
 const int mqtt_port = 1883;
 const char* mqtt_topic = "sensor/datos";
 
+// Credenciales del broker MQTT
+const char* mqtt_user = "usuario_mqtt";
+const char* mqtt_password = "clave_mqtt";
+
 // Cliente WiFi y cliente MQTT
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -51,7 +55,7 @@ bool Comms::mqtt_connected() {
 void Comms::reconnect_mqtt() {
     while (!client.connected()) {
         Serial.print("Conectando a MQTT...");
-        if (client.connect("ESP32Client")) {
+        if (client.connect("ESP32Client", mqtt_user, mqtt_password))) {
             Serial.println("Conectado");
             client.subscribe("sensor/comandos");  // Se suscribe al topic donde se reciben comandos
         } else {
