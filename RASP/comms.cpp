@@ -29,6 +29,11 @@ Comms::~Comms() {
 
 // Conecta al broker MQTT y se suscribe al topic indicado
 void Comms::connect() {
+    // Establece usuario y contraseña antes de conectar
+    const std::string mqtt_user = "usuario_mqtt";
+    const std::string mqtt_password = "clave_mqtt";
+    mosquitto_username_pw_set(mosq, mqtt_user.c_str(), mqtt_password.c_str());
+    
     // Intenta establecer la conexión con el broker
     mosquitto_connect(mosq, broker.c_str(), port, 60);  // 60 segundos de keep-alive
 
